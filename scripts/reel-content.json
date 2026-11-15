@@ -1,0 +1,48 @@
+{
+  "concept": "Lottery Odds Translator",
+  "hook": "Your odds of winning Lotto Max are 1 in 33 million.",
+  "seo": ["Lotto Max odds explained", "what are the odds of winning the lottery", "lottery odds visualization"],
+  "caption": "Feeling lucky? Maybe save that $5 instead. Link in bio for a savings app that actually gives you something back.",
+  "slides": [
+    {
+      "text": "Your odds of winning\nLotto Max?",
+      "sub": "1 in 33,294,800",
+      "duration": 3
+    },
+    {
+      "text": "That's like picking\n1 specific person",
+      "sub": "out of every single Canadian",
+      "duration": 3
+    },
+    {
+      "text": "Or flipping a coin\nand getting heads",
+      "sub": "25 times in a row",
+      "duration": 3
+    },
+    {
+      "text": "Or guessing someone's\nphone number",
+      "sub": "on the first try",
+      "duration": 3
+    },
+    {
+      "text": "You're 4,000x more likely\nto get struck by lightning",
+      "sub": "twice",
+      "duration": 3
+    },
+    {
+      "text": "Canadians spend\n$9 billion a year",
+      "sub": "on lottery tickets",
+      "duration": 3
+    },
+    {
+      "text": "$5 a week for 30 years\nat 7% return?",
+      "sub": "$25,362",
+      "duration": 4
+    },
+    {
+      "text": "Save this for later",
+      "sub": "",
+      "duration": 3
+    }
+  ]
+}
