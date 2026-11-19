@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { overflow: hidden; background: #0A0A0A; }
+
+#root {
+  width: 1080px; height: 1920px;
+  position: relative; overflow: hidden;
+  background: #0A0A0A;
+  font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  color: #F0F0F0;
+}
+
+.scene {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 60px;
+  opacity: 0;
+}
+
+/* Typography */
+.mono { font-family: 'SF Mono', 'Menlo', 'Courier New', monospace; }
+.counter-huge {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 160px; font-weight: 800;
+  color: #FF4444;
+  letter-spacing: -4px;
+  text-align: center;
+}
+.counter-green {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 160px; font-weight: 800;
+  color: #34D399;
+  letter-spacing: -4px;
+}
+.label {
+  font-size: 40px; font-weight: 400;
+  color: #888;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 800px;
+}
+.headline {
+  font-size: 72px; font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+.headline em { color: #FFD700; font-style: normal; }
+.sub {
+  font-size: 48px; color: #999;
+  text-align: center; margin-top: 24px;
+}
+.odds {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 64px; font-weight: 700;
+  color: #FF6B6B;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Math card */
+.math-card {
+  background: #151515;
+  border: 1px solid #2A2A2A;
+  border-radius: 20px;
+  padding: 50px 60px;
+  width: 88%;
+  text-align: center;
+}
+.math-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 24px; margin: 16px 0;
+  font-size: 52px; font-weight: 600;
+}
+.math-op { color: #666; font-size: 40px; }
+.math-num { color: #F0F0F0; font-family: 'SF Mono', 'Menlo', monospace; }
+.math-result {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 80px; font-weight: 800;
+  color: #FF4444;
+  margin-top: 20px;
+}
+.math-line {
+  width: 60%; height: 2px;
+  background: #333; margin: 20px auto;
+}
+
+/* Bar chart */
+.chart-area {
+  width: 88%; height: 500px;
+  position: relative;
+  margin-top: 40px;
+}
+.bar {
+  position: absolute; bottom: 0;
+  border-radius: 12px 12px 0 0;
+  width: 160px;
+}
+.bar-red {
+  background: linear-gradient(180deg, #FF4444 0%, #CC2222 100%);
+  left: 240px;
+}
+.bar-green {
+  background: linear-gradient(180deg, #34D399 0%, #059669 100%);
+  right: 240px;
+}
+.bar-label {
+  position: absolute; bottom: -50px;
+  width: 160px; text-align: center;
+  font-size: 28px; color: #888;
+}
+.bar-value {
+  position: absolute; top: -60px;
+  width: 160px; text-align: center;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 36px; font-weight: 700;
+}
+.bar-red .bar-value { color: #FF6B6B; }
+.bar-green .bar-value { color: #34D399; }
+
+/* Lightning */
+.lightning-icon { font-size: 140px; margin-bottom: 20px; }
+.lightning-stat {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 100px; font-weight: 800;
+  color: #FFD700;
+}
+
+/* CTA */
+.phone-mock {
+  width: 380px; height: 680px;
+  background: #1A1A1A;
+  border: 3px solid #333;
+  border-radius: 40px;
+  padding: 20px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.mock-header {
+  font-size: 28px; color: #888;
+  margin-bottom: 20px;
+}
+.mock-number {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 64px; font-weight: 800;
+  color: #34D399;
+}
+.mock-slider {
+  width: 280px; height: 8px;
+  background: #333; border-radius: 4px;
+  margin: 30px 0;
+  position: relative;
+}
+.mock-thumb {
+  width: 28px; height: 28px;
+  background: #34D399;
+  border-radius: 50%;
+  position: absolute; top: -10px;
+}
+.mock-label {
+  font-size: 24px; color: #666;
+}
+
+.cta-text {
+  font-size: 64px; font-weight: 700;
+  text-align: center;
+  margin-top: 30px;
+}
+.cta-sub {
+  font-size: 36px; color: #888;
+  text-align: center; margin-top: 16px;
+}
+
+/* Source tag */
+.source-tag {
+  position: absolute;
+  bottom: 80px; right: 60px;
+  font-size: 20px; color: #444;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+/* Grain overlay */
+.grain {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.save-text {
+  font-size: 56px; font-weight: 600;
+  color: #666; text-align: center;
+}
+.save-arrow {
+  font-size: 80px; color: #444;
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="28" data-width="1080" data-height="1920">
+
+  <!-- S1: Hook — the guilt counter (0-3s) -->
+  <div class="scene" id="s1">
+    <div class="label">Weekly Lotto Max over 45 years</div>
+    <div class="counter-huge" id="guilt-counter">$0</div>
+    <div class="label" style="margin-top:30px; font-size:32px; color:#555;">That's what you spent</div>
+  </div>
+
+  <!-- S2: Odds (3-6s) -->
+  <div class="scene" id="s2">
+    <div class="headline">Your odds of<br>getting it back?</div>
+    <div class="odds" id="odds-text">1 in 33,446,140</div>
+    <div class="source-tag">source: OLG.ca</div>
+  </div>
+
+  <!-- S3: Math breakdown (6-9s) -->
+  <div class="scene" id="s3">
+    <div class="math-card">
+      <div class="math-row">
+        <span class="math-num" id="m-price">$6</span>
+        <span class="math-op">per play</span>
+      </div>
+      <div class="math-row">
+        <span class="math-op">×</span>
+        <span class="math-num" id="m-weeks">52 weeks</span>
+      </div>
+      <div class="math-line"></div>
+      <div class="math-result" id="m-total">$312 / year</div>
+    </div>
+  </div>
+
+  <!-- S4: 10-year bar (9-12s) -->
+  <div class="scene" id="s4">
+    <div class="headline" style="font-size:56px;">After 10 years</div>
+    <div class="chart-area">
+      <div class="bar bar-red" id="bar-spent" style="height:0px;">
+        <div class="bar-value">$3,120</div>
+        <div class="bar-label">Spent</div>
+      </div>
+      <div class="bar bar-green" id="bar-saved" style="height:0px;">
+        <div class="bar-value">$4,600</div>
+        <div class="bar-label">Saved at 7%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: Re-hook (12-14s) -->
+  <div class="scene" id="s5">
+    <div class="headline" style="color:#FFD700;">But here's what<br><em>actually</em> hurts</div>
+  </div>
+
+  <!-- S6: 30-year rocket (14-18s) -->
+  <div class="scene" id="s6">
+    <div class="headline" style="font-size:52px;">30 years of $6/week</div>
+    <div class="chart-area" style="height:600px;">
+      <div class="bar bar-red" id="bar-spent-30" style="height:0px; width:140px; left:260px;">
+        <div class="bar-value">$9,360</div>
+        <div class="bar-label">Spent</div>
+      </div>
+      <div class="bar bar-green" id="bar-saved-30" style="height:0px; width:140px; right:260px;">
+        <div class="bar-value" id="savings-30">$0</div>
+        <div class="bar-label">Saved at 7%</div>
+      </div>
+    </div>
+    <div class="counter-green" id="big-savings" style="font-size:100px; opacity:0;">$25,362</div>
+  </div>
+
+  <!-- S7: Lightning (18-21s) -->
+  <div class="scene" id="s7">
+    <div class="lightning-icon">⚡</div>
+    <div class="lightning-stat">4,000×</div>
+    <div class="headline" style="font-size:48px; margin-top:20px;">more likely to get<br>struck by lightning</div>
+    <div class="sub">than to win the jackpot</div>
+  </div>
+
+  <!-- S8: Calculator CTA (21-25s) -->
+  <div class="scene" id="s8">
+    <div class="phone-mock" id="phone-mock">
+      <div class="mock-header">Lottery Calculator</div>
+      <div class="mock-number" id="mock-result">$25,362</div>
+      <div class="mock-slider">
+        <div class="mock-thumb" id="mock-thumb" style="left:80%;"></div>
+      </div>
+      <div class="mock-label">30 years</div>
+    </div>
+    <div class="cta-text">Free calculator<br>in bio</div>
+    <div class="cta-sub">Works for any lottery</div>
+  </div>
+
+  <!-- S9: Save (25-28s) -->
+  <div class="scene" id="s9">
+    <div class="save-text">Save this for later</div>
+    <div class="save-arrow">↓</div>
+  </div>
+
+  <div class="grain"></div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+const tl = gsap.timeline({ paused: true });
+
+function scene(id, start, dur) {
+  tl.to(id, { opacity: 1, duration: 0.3 }, start);
+  tl.to(id, { opacity: 0, duration: 0.25 }, start + dur - 0.25);
+}
+
+// S1: Guilt counter — rapid tick from 0 to 14,000 (0-3s)
+scene('#s1', 0, 3);
+tl.to('#guilt-counter', {
+  innerHTML: 14000, duration: 2.2, ease: 'power2.in',
+  snap: { innerHTML: 1 },
+  modifiers: { innerHTML: v => '$' + Math.round(v).toLocaleString() }
+}, 0.3);
+
+// S2: Odds reveal (3-6s)
+scene('#s2', 3, 3);
+tl.from('#odds-text', { scale: 0.6, opacity: 0, duration: 0.4, ease: 'back.out(2)' }, 3.4);
+
+// S3: Math card (6-9s)
+scene('#s3', 6, 3);
+tl.from('#m-price', { x: -40, opacity: 0, duration: 0.3 }, 6.3);
+tl.from('#m-weeks', { x: 40, opacity: 0, duration: 0.3 }, 6.6);
+tl.from('#m-total', { scale: 0.5, opacity: 0, duration: 0.4, ease: 'back.out(2)' }, 7.2);
+
+// S4: 10-year bars (9-12s)
+scene('#s4', 9, 3);
+tl.to('#bar-spent', { height: 250, duration: 1, ease: 'power2.out' }, 9.3);
+tl.to('#bar-saved', { height: 370, duration: 1.2, ease: 'power2.out' }, 9.6);
+
+// S5: Re-hook (12-14s)
+scene('#s5', 12, 2);
+tl.from('#s5 .headline', { scale: 1.1, duration: 0.5, ease: 'power3.out' }, 12.1);
+
+// S6: 30-year rocket (14-18s)
+scene('#s6', 14, 4);
+tl.to('#bar-spent-30', { height: 160, duration: 0.8, ease: 'power2.out' }, 14.3);
+tl.to('#bar-saved-30', { height: 500, duration: 2, ease: 'power2.out' }, 14.5);
+tl.to('#savings-30', {
+  innerHTML: 25362, duration: 2, snap: { innerHTML: 1 },
+  modifiers: { innerHTML: v => '$' + Math.round(v).toLocaleString() }
+}, 14.5);
+tl.to('#big-savings', { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, 16.8);
+tl.from('#big-savings', { scale: 0.7 }, 16.8);
+
+// S7: Lightning (18-21s)
+scene('#s7', 18, 3);
+tl.from('.lightning-icon', { y: -80, opacity: 0, duration: 0.3, ease: 'bounce.out' }, 18.2);
+tl.from('.lightning-stat', { scale: 0, duration: 0.3, ease: 'back.out(3)' }, 18.5);
+
+// S8: Calculator CTA (21-25s)
+scene('#s8', 21, 4);
+tl.from('#phone-mock', { y: 60, opacity: 0, duration: 0.5, ease: 'power3.out' }, 21.2);
+tl.to('#mock-thumb', { left: '20%', duration: 1.5, ease: 'power2.inOut' }, 22);
+tl.to('#mock-result', {
+  innerHTML: 4600, duration: 1.5, snap: { innerHTML: 1 },
+  modifiers: { innerHTML: v => '$' + Math.round(v).toLocaleString() }
+}, 22);
+tl.to('#mock-thumb', { left: '80%', duration: 1, ease: 'power2.inOut' }, 23.5);
+tl.to('#mock-result', {
+  innerHTML: 25362, duration: 1, snap: { innerHTML: 1 },
+  modifiers: { innerHTML: v => '$' + Math.round(v).toLocaleString() }
+}, 23.5);
+tl.from('.cta-text', { y: 20, opacity: 0, duration: 0.4 }, 21.8);
+
+// S9: Save (25-28s)
+scene('#s9', 25, 3);
+tl.from('.save-text', { y: 20, opacity: 0, duration: 0.4 }, 25.3);
+
+window.__timelines = window.__timelines || {};
+window.__timelines.main = tl;
+</script>
+</body>
+</html>
