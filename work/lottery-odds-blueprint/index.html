@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { overflow: hidden; background: #071B33; }
+
+#root {
+  width: 1080px; height: 1920px;
+  position: relative; overflow: hidden;
+  background: #071B33;
+  font-family: 'Courier New', 'Courier', monospace;
+  color: #C8DCF0;
+}
+
+/* Blueprint grid — major + minor lines */
+.grid {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(100, 160, 220, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 160, 220, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(100, 160, 220, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 160, 220, 0.16) 1px, transparent 1px);
+  background-size:
+    27px 27px,
+    27px 27px,
+    135px 135px,
+    135px 135px;
+}
+
+/* Edge marks — the fold/registration crosses */
+.edge-marks {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.edge-marks::before,
+.edge-marks::after {
+  content: '';
+  position: absolute;
+  background: rgba(100, 160, 220, 0.25);
+}
+.edge-marks::before {
+  top: 40px; left: 40px; right: 40px; bottom: 40px;
+  border: 1px solid rgba(100, 160, 220, 0.12);
+}
+
+.scene {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 100px 70px;
+  opacity: 0;
+}
+
+/* Blueprint typography — technical lettering feel */
+.bp-title {
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: rgba(160, 200, 240, 0.5);
+  margin-bottom: 30px;
+}
+
+.bp-main {
+  font-size: 62px;
+  font-weight: 700;
+  color: #E0EEFF;
+  text-align: center;
+  line-height: 1.35;
+  text-shadow: 0 0 20px rgba(100, 180, 255, 0.3), 0 0 60px rgba(60, 140, 255, 0.1);
+}
+
+.bp-stat {
+  font-size: 120px;
+  font-weight: 700;
+  color: #4DA8FF;
+  text-align: center;
+  text-shadow: 0 0 30px rgba(77, 168, 255, 0.5), 0 0 80px rgba(77, 168, 255, 0.15);
+  letter-spacing: -2px;
+}
+
+.bp-sub {
+  font-size: 40px;
+  font-weight: 400;
+  color: rgba(160, 200, 240, 0.7);
+  text-align: center;
+  margin-top: 24px;
+  letter-spacing: 1px;
+}
+
+/* Dimension line — horizontal rule with end marks */
+.dim-line {
+  width: 400px;
+  height: 1px;
+  background: rgba(100, 160, 220, 0.4);
+  margin: 36px auto;
+  position: relative;
+}
+.dim-line::before, .dim-line::after {
+  content: '';
+  position: absolute; top: -6px;
+  width: 1px; height: 13px;
+  background: rgba(100, 160, 220, 0.6);
+}
+.dim-line::before { left: 0; }
+.dim-line::after { right: 0; }
+
+/* Callout annotation — angled leader line + label */
+.callout {
+  position: absolute;
+  font-size: 20px;
+  color: rgba(120, 170, 220, 0.5);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.callout::before {
+  content: '';
+  position: absolute;
+  width: 60px; height: 1px;
+  background: rgba(100, 160, 220, 0.3);
+  top: 50%;
+}
+.callout.left { right: 100%; padding-right: 80px; }
+.callout.left::before { right: 10px; }
+.callout.right { left: 100%; padding-left: 80px; }
+.callout.right::before { left: 10px; }
+
+/* Technical detail box */
+.spec-box {
+  border: 1px solid rgba(100, 160, 220, 0.25);
+  border-radius: 4px;
+  padding: 40px 50px;
+  position: relative;
+  width: 85%;
+  text-align: center;
+}
+.spec-box::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 30px;
+  width: 120px; height: 1px;
+  background: #071B33;
+}
+.spec-label {
+  position: absolute;
+  top: -13px; left: 34px;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(100, 160, 220, 0.5);
+  background: #071B33;
+  padding: 0 8px;
+}
+
+/* Crosshair/target for odds */
+.crosshair {
+  width: 200px; height: 200px;
+  border: 1px solid rgba(77, 168, 255, 0.3);
+  border-radius: 50%;
+  position: relative;
+  margin: 0 auto 30px;
+}
+.crosshair::before, .crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(77, 168, 255, 0.25);
+}
+.crosshair::before {
+  top: 50%; left: 10%; right: 10%;
+  height: 1px;
+}
+.crosshair::after {
+  left: 50%; top: 10%; bottom: 10%;
+  width: 1px;
+}
+.crosshair-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 10px; height: 10px;
+  margin: -5px 0 0 -5px;
+  background: #FF5555;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 85, 85, 0.6);
+}
+
+/* Accent color for emphasis */
+.accent { color: #4DA8FF; }
+.warn { color: #FF7A5C; text-shadow: 0 0 20px rgba(255, 122, 92, 0.3); }
+.green { color: #3EE6A0; text-shadow: 0 0 20px rgba(62, 230, 160, 0.3); }
+
+/* Registration marks in corners */
+.reg-mark {
+  position: absolute;
+  width: 24px; height: 24px;
+  border: 1px solid rgba(100, 160, 220, 0.2);
+}
+.reg-mark.tl { top: 50px; left: 50px; border-right: none; border-bottom: none; }
+.reg-mark.tr { top: 50px; right: 50px; border-left: none; border-bottom: none; }
+.reg-mark.bl { bottom: 50px; left: 50px; border-right: none; border-top: none; }
+.reg-mark.br { bottom: 50px; right: 50px; border-left: none; border-top: none; }
+
+/* Title block (bottom-right, like a real blueprint) */
+.title-block {
+  position: absolute;
+  bottom: 60px; right: 60px;
+  border: 1px solid rgba(100, 160, 220, 0.2);
+  padding: 10px 16px;
+  font-size: 16px;
+  color: rgba(100, 160, 220, 0.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Drawing number (top-right) */
+.drawing-num {
+  position: absolute;
+  top: 60px; right: 60px;
+  font-size: 18px;
+  color: rgba(100, 160, 220, 0.25);
+  letter-spacing: 3px;
+}
+
+/* Grain overlay */
+.grain {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="25" data-width="1080" data-height="1920">
+
+  <div class="grid" id="grid"></div>
+  <div class="edge-marks"></div>
+  <div class="reg-mark tl"></div>
+  <div class="reg-mark tr"></div>
+  <div class="reg-mark bl"></div>
+  <div class="reg-mark br"></div>
+  <div class="drawing-num" id="dwg-num">DWG-001 REV A</div>
+
+  <!-- S1: Hook — odds target (0–3s) -->
+  <div class="scene" id="s1">
+    <div class="bp-title">probability analysis</div>
+    <div class="crosshair" id="xhair">
+      <div class="crosshair-dot" id="xdot"></div>
+    </div>
+    <div class="bp-main">Your odds of winning<br>Lotto Max?</div>
+    <div class="dim-line" id="dim1"></div>
+    <div class="bp-stat accent" id="odds-val">1 in 33,294,800</div>
+  </div>
+
+  <!-- S2: Canadian comparison (3–6s) -->
+  <div class="scene" id="s2">
+    <div class="spec-box" id="spec2">
+      <div class="spec-label">comparison 01</div>
+      <div class="bp-main" style="font-size:56px;">Picking <span class="accent">1 specific person</span></div>
+      <div class="dim-line"></div>
+      <div class="bp-sub">out of every single Canadian</div>
+      <div class="bp-stat accent" style="font-size:80px; margin-top:20px;">41,000,000</div>
+    </div>
+  </div>
+
+  <!-- S3: Coin flip (6–9s) -->
+  <div class="scene" id="s3">
+    <div class="spec-box" id="spec3">
+      <div class="spec-label">comparison 02</div>
+      <div class="bp-main" style="font-size:56px;">Flipping a coin<br>and getting <span class="accent">heads</span></div>
+      <div class="dim-line"></div>
+      <div class="bp-stat accent" id="coin-num">25</div>
+      <div class="bp-sub">times in a row</div>
+    </div>
+  </div>
+
+  <!-- S4: Phone number (9–12s) -->
+  <div class="scene" id="s4">
+    <div class="spec-box" id="spec4">
+      <div class="spec-label">comparison 03</div>
+      <div class="bp-main" style="font-size:56px;">Guessing someone's<br><span class="accent">phone number</span></div>
+      <div class="dim-line"></div>
+      <div class="bp-sub">on the first try</div>
+      <div class="bp-stat accent" style="font-size:64px; margin-top:16px; letter-spacing:8px;">XXX-XXX-XXXX</div>
+    </div>
+  </div>
+
+  <!-- S5: Lightning (12–15s) -->
+  <div class="scene" id="s5">
+    <div class="bp-title">risk assessment</div>
+    <div class="bp-stat warn" style="font-size:130px;" id="light-stat">4,000×</div>
+    <div class="bp-main" style="font-size:48px; margin-top:20px;">more likely to get<br>struck by <span class="warn">lightning</span></div>
+    <div class="dim-line"></div>
+    <div class="bp-sub" style="color: rgba(255, 122, 92, 0.8);">twice</div>
+  </div>
+
+  <!-- S6: Spending (15–18s) -->
+  <div class="scene" id="s6">
+    <div class="bp-title">annual expenditure</div>
+    <div class="bp-main" style="font-size:50px;">Canadians spend</div>
+    <div class="bp-stat warn" style="font-size:150px;" id="spend-val">$9B</div>
+    <div class="dim-line"></div>
+    <div class="bp-sub">on lottery tickets per year</div>
+  </div>
+
+  <!-- S7: Savings (18–22s) -->
+  <div class="scene" id="s7">
+    <div class="spec-box" id="spec7" style="border-color: rgba(62, 230, 160, 0.3);">
+      <div class="spec-label" style="color: rgba(62, 230, 160, 0.5);">projection</div>
+      <div class="bp-main" style="font-size:44px;">$5 a week for 30 years<br>at 7% return</div>
+      <div class="dim-line" style="background: rgba(62, 230, 160, 0.3);"></div>
+      <div class="bp-stat green" style="font-size:130px;" id="save-val">$0</div>
+    </div>
+  </div>
+
+  <!-- S8: CTA (22–25s) -->
+  <div class="scene" id="s8">
+    <div class="bp-main" style="font-size:60px; color: rgba(160, 200, 240, 0.6);">Save this<br>for later</div>
+    <div class="dim-line"></div>
+    <div class="bp-sub" style="font-size:60px; color: rgba(100, 160, 220, 0.4);">↓</div>
+  </div>
+
+  <div class="title-block" id="tblock">Sheet 1 of 1 — Lottery Odds</div>
+  <div class="grain"></div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+const tl = gsap.timeline({ paused: true });
+
+function scene(id, start, dur) {
+  tl.to(id, { opacity: 1, duration: 0.35, ease: 'power2.out' }, start);
+  tl.to(id, { opacity: 0, duration: 0.25 }, start + dur - 0.25);
+}
+
+function specSlide(id, start) {
+  tl.from(id, { scaleX: 0, transformOrigin: 'left center', duration: 0.4, ease: 'power3.out' }, start + 0.1);
+}
+
+// Grid subtle pulse — constant background animation
+tl.to('#grid', { opacity: 0.7, duration: 1, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 0);
+
+// S1: Hook with crosshair (0–3s)
+scene('#s1', 0, 3);
+tl.from('#xhair', { scale: 3, opacity: 0, duration: 0.6, ease: 'power3.out' }, 0.1);
+tl.from('#xdot', { scale: 0, duration: 0.2, ease: 'back.out(3)' }, 0.7);
+tl.from('#odds-val', { opacity: 0, y: 20, duration: 0.4 }, 0.9);
+tl.from('#dim1', { scaleX: 0, duration: 0.3, ease: 'power2.out' }, 0.7);
+
+// S2: Canadian (3–6s)
+scene('#s2', 3, 3);
+specSlide('#spec2', 3);
+
+// S3: Coin flip (6–9s)
+scene('#s3', 6, 3);
+specSlide('#spec3', 6);
+tl.from('#coin-num', { innerHTML: 0, duration: 0.7, snap: { innerHTML: 1 }, ease: 'power2.out' }, 6.6);
+
+// S4: Phone (9–12s)
+scene('#s4', 9, 3);
+specSlide('#spec4', 9);
+
+// S5: Lightning (12–15s)
+scene('#s5', 12, 3);
+tl.from('#light-stat', { scale: 0.4, opacity: 0, duration: 0.4, ease: 'back.out(2)' }, 12.3);
+
+// S6: Spending (15–18s)
+scene('#s6', 15, 3);
+tl.from('#spend-val', { scale: 0.3, opacity: 0, duration: 0.5, ease: 'power3.out' }, 15.3);
+
+// S7: Savings (18–22s)
+scene('#s7', 18, 4);
+specSlide('#spec7', 18);
+tl.to('#save-val', {
+  innerHTML: 25362, duration: 2.5, ease: 'power2.out',
+  snap: { innerHTML: 1 },
+  modifiers: { innerHTML: v => '$' + Math.round(v).toLocaleString() }
+}, 18.8);
+
+// S8: CTA (22–25s)
+scene('#s8', 22, 3);
+tl.from('#s8 .bp-main', { y: 30, opacity: 0, duration: 0.4 }, 22.3);
+
+window.__timelines = window.__timelines || {};
+window.__timelines.main = tl;
+</script>
+</body>
+</html>
